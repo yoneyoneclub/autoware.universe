@@ -1030,15 +1030,15 @@ geometry_msgs::msg::PoseWithCovarianceStamped NDTScanMatcher::align_pose(
 
     geometry_msgs::msg::Pose initial_pose;
     initial_pose.position.x =
-      initial_pose_with_cov.pose.pose.position.x + uniform_to_normal(input[0]) * stddev_x;
+      initial_pose_with_cov.pose.pose.position.x ;
     initial_pose.position.y =
-      initial_pose_with_cov.pose.pose.position.y + uniform_to_normal(input[1]) * stddev_y;
+      initial_pose_with_cov.pose.pose.position.y ;
     initial_pose.position.z =
-      initial_pose_with_cov.pose.pose.position.z + uniform_to_normal(input[2]) * stddev_z;
+      initial_pose_with_cov.pose.pose.position.z ;
     geometry_msgs::msg::Vector3 init_rpy;
-    init_rpy.x = base_rpy.x + uniform_to_normal(input[3]) * stddev_roll;
-    init_rpy.y = base_rpy.y + uniform_to_normal(input[4]) * stddev_pitch;
-    init_rpy.z = base_rpy.z + input[5] * M_PI;
+    init_rpy.x = base_rpy.x;
+    init_rpy.y = base_rpy.y;
+    init_rpy.z = base_rpy.z;
     tf2::Quaternion tf_quaternion;
     tf_quaternion.setRPY(init_rpy.x, init_rpy.y, init_rpy.z);
     initial_pose.orientation = tf2::toMsg(tf_quaternion);
