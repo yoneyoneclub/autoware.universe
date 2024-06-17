@@ -996,12 +996,12 @@ geometry_msgs::msg::PoseWithCovarianceStamped NDTScanMatcher::align_pose(
   // TPE. Let u = 2 * phi(x) - 1, then x = sqrt(2) * erf_inv(u). Computationally, it is not a good
   // to give erf_inv -1 and 1, so it is rounded off at (-1 + eps, 1 - eps).
   const double sqrt2 = std::sqrt(2);
-  // auto uniform_to_normal = [&sqrt2](const double uniform) {
-  //   assert(-1.0 <= uniform && uniform <= 1.0);
-  //   constexpr double epsilon = 1.0e-6;
-  //   const double clamped = std::clamp(uniform, -1.0 + epsilon, 1.0 - epsilon);
-  //   return boost::math::erf_inv(clamped) * sqrt2;
-  // };
+  auto uniform_to_normal = [&sqrt2](const double uniform) {
+    assert(-1.0 <= uniform && uniform <= 1.0);
+    constexpr double epsilon = 1.0e-6;
+    const double clamped = std::clamp(uniform, -1.0 + epsilon, 1.0 - epsilon);
+    return boost::math::erf_inv(clamped) * sqrt2;
+  };
 
   auto normal_to_uniform = [&sqrt2](const double normal) {
     return boost::math::erf(normal / sqrt2);
@@ -1030,15 +1030,15 @@ geometry_msgs::msg::PoseWithCovarianceStamped NDTScanMatcher::align_pose(
 
     geometry_msgs::msg::Pose initial_pose;
     initial_pose.position.x =
-      initial_pose_with_cov.pose.pose.position.x ;
+      initial_pose_with_cov.pose.pose.position.x + uniform_to_normal(input[0]) * stddev_x;
     initial_pose.position.y =
-      initial_pose_with_cov.pose.pose.position.y ;
+      initial_pose_with_cov.pose.pose.position.y + uniform_to_normal(input[1]) * stddev_y;
     initial_pose.position.z =
-      initial_pose_with_cov.pose.pose.position.z ;
+      initial_pose_with_cov.pose.pose.position.z + uniform_to_normal(input[2]) * stddev_z;
     geometry_msgs::msg::Vector3 init_rpy;
-    init_rpy.x = base_rpy.x;
-    init_rpy.y = base_rpy.y;
-    init_rpy.z = base_rpy.z;
+    init_rpy.x = base_rpy.x + uniform_to_normal(input[3]) * stddev_roll;
+    init_rpy.y = base_rpy.y + uniform_to_normal(input[4]) * stddev_pitch;
+    init_rpy.z = base_rpy.z + input[5] * M_PI;
     tf2::Quaternion tf_quaternion;
     tf_quaternion.setRPY(init_rpy.x, init_rpy.y, init_rpy.z);
     initial_pose.orientation = tf2::toMsg(tf_quaternion);
