@@ -996,12 +996,12 @@ geometry_msgs::msg::PoseWithCovarianceStamped NDTScanMatcher::align_pose(
   // TPE. Let u = 2 * phi(x) - 1, then x = sqrt(2) * erf_inv(u). Computationally, it is not a good
   // to give erf_inv -1 and 1, so it is rounded off at (-1 + eps, 1 - eps).
   const double sqrt2 = std::sqrt(2);
-  auto uniform_to_normal = [&sqrt2](const double uniform) {
-    assert(-1.0 <= uniform && uniform <= 1.0);
-    constexpr double epsilon = 1.0e-6;
-    const double clamped = std::clamp(uniform, -1.0 + epsilon, 1.0 - epsilon);
-    return boost::math::erf_inv(clamped) * sqrt2;
-  };
+  // auto uniform_to_normal = [&sqrt2](const double uniform) {
+  //   assert(-1.0 <= uniform && uniform <= 1.0);
+  //   constexpr double epsilon = 1.0e-6;
+  //   const double clamped = std::clamp(uniform, -1.0 + epsilon, 1.0 - epsilon);
+  //   return boost::math::erf_inv(clamped) * sqrt2;
+  // };
 
   auto normal_to_uniform = [&sqrt2](const double normal) {
     return boost::math::erf(normal / sqrt2);
